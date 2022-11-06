@@ -1,4 +1,4 @@
-package ru.geekbrains.spring.winter.market.dtos;
+package ru.geekbrains.spring.winter.market.model;
 
 
 
@@ -22,12 +22,33 @@ public class Cart {
     }
 
     public List<CartItem> getItems(){
+
         return Collections.unmodifiableList(items);
     }
 
     public void add(Product product){
+        for(CartItem item : items ){
+            if (product.getId().equals(item.getProductId())){
+                item.changeQuantity(1);
+                recalculate();
+                return;
+            }
+        }
         items.add(new CartItem(product.getTitle(), product.getId(), 1, product.getPrice(),product.getPrice()));
         recalculate();
+    }
+
+    public void remove(Long productId){
+      if  (items.removeIf(item -> item.getProductId().equals(productId))){
+          recalculate();
+      }
+    }
+
+
+    public void clear(){
+        items.clear();
+        totalPrice=0;
+
     }
 
     private void recalculate(){
